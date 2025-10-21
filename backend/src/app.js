@@ -18,10 +18,23 @@ const app = express();
 app.use(helmet());
 
 // CORS configuration
+const allowedOrigins = [
+  "https://crypto-dashboard-sepia-one.vercel.app",
+  "http://localhost:3000"
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000' || "https://crypto-dashboard-sepia-one.vercel.app",
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error(`❌ Blocked by CORS: ${origin}`);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
 }));
+
 
 // Body parser
 app.use(express.json());
